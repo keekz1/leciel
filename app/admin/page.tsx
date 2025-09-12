@@ -13,7 +13,7 @@ import {
   where,
 } from "firebase/firestore";
 
-interface MenuItem {
+export interface MenuItem {
   id?: string;
   name: string;
   price: string;
@@ -25,40 +25,15 @@ interface Category {
 }
 
 export default function AdminPage() {
-  // AUTH
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loginForm, setLoginForm] = useState({ username: "", password: "" });
-
-  const ADMIN_USERNAME = "admin";
-  const ADMIN_PASSWORD = "12345"; // 🔒 Change this later or integrate Firebase Auth
-
-  function handleLogin(e: React.FormEvent) {
-    e.preventDefault();
-    if (
-      loginForm.username === ADMIN_USERNAME &&
-      loginForm.password === ADMIN_PASSWORD
-    ) {
-      setIsAuthenticated(true);
-    } else {
-      alert("Invalid username or password");
-    }
-  }
-
-  function handleLogout() {
-    setIsAuthenticated(false);
-    setLoginForm({ username: "", password: "" }); // reset login form
-  }
-
-  // MENU + CATEGORIES
   const [menu, setMenu] = useState<MenuItem[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [newItemForm, setNewItemForm] = useState<MenuItem>({
+  const [newItemForm, setNewItemForm] = useState<Omit<MenuItem, "id">>({
     name: "",
     price: "",
     category: "",
   });
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editingForm, setEditingForm] = useState<MenuItem>({
+  const [editingForm, setEditingForm] = useState<Omit<MenuItem, "id">>({
     name: "",
     price: "",
     category: "",
@@ -68,9 +43,9 @@ export default function AdminPage() {
 
   async function fetchMenu() {
     const querySnapshot = await getDocs(collection(db, "menu"));
-    const items = querySnapshot.docs.map((doc) => {
-      const data = doc.data() as Omit<MenuItem, "id">;
-      return { id: doc.id, ...data };
+    const items = querySnapshot.docs.map((docSnap) => {
+      const data = docSnap.data() as Omit<MenuItem, "id">;
+      return { id: docSnap.id, ...data };
     });
     setMenu(items);
 
@@ -81,12 +56,12 @@ export default function AdminPage() {
   }
 
   useEffect(() => {
-    if (isAuthenticated) fetchMenu();
-  }, [isAuthenticated]);
+    fetchMenu();
+  }, []);
 
   async function addItem() {
     if (!newItemForm.name || !newItemForm.price || !newItemForm.category) return;
-    await addDoc(collection(db, "menu"), { ...newItemForm } as any);
+    await addDoc(collection(db, "menu"), newItemForm);
     setNewItemForm({ name: "", price: "", category: "" });
     fetchMenu();
   }
@@ -94,7 +69,7 @@ export default function AdminPage() {
   async function updateItem(docId: string) {
     if (!docId) return;
     const itemRef = doc(db, "menu", docId);
-    await updateDoc(itemRef, { ...editingForm } as any);
+    await updateDoc(itemRef, editingForm);
     setEditingId(null);
     setEditingForm({ name: "", price: "", category: "" });
     fetchMenu();
@@ -133,57 +108,10 @@ export default function AdminPage() {
     setCategoryToDelete("");
   }
 
-  // IF NOT AUTHENTICATED -> LOGIN SCREEN
-  if (!isAuthenticated) {
-    return (
-      <main className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-        <form
-          onSubmit={handleLogin}
-          className="bg-white p-6 rounded-xl shadow-md w-full max-w-sm"
-        >
-          <h2 className="text-2xl font-bold text-center mb-4">Admin Login</h2>
-          <input
-            type="text"
-            placeholder="Username"
-            value={loginForm.username}
-            onChange={(e) =>
-              setLoginForm({ ...loginForm, username: e.target.value })
-            }
-            className="w-full p-2 border rounded-md mb-3"
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={loginForm.password}
-            onChange={(e) =>
-              setLoginForm({ ...loginForm, password: e.target.value })
-            }
-            className="w-full p-2 border rounded-md mb-3"
-          />
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700"
-          >
-            Login
-          </button>
-        </form>
-      </main>
-    );
-  }
-
-  // IF AUTHENTICATED -> ADMIN DASHBOARD
   return (
     <main className="min-h-screen bg-gray-100 p-4 md:p-8">
       <div className="max-w-4xl mx-auto space-y-8">
-        <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-center">Admin Dashboard</h1>
-          <button
-            onClick={handleLogout}
-            className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700"
-          >
-            Logout
-          </button>
-        </div>
+        <h1 className="text-3xl font-bold text-center">Admin Dashboard</h1>
 
         {/* CATEGORY MANAGEMENT */}
         <section className="bg-white p-4 md:p-6 rounded-xl shadow">
