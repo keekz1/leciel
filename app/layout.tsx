@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Le Ciel Lounge',
     description: 'Welcome to Le Ciel Lounge',
-    images: ['https://i.imgur.com/tcA55YZ.png'],
+    images: ['https://imgur.com/tcA55YZ'],
   },
 };
 
