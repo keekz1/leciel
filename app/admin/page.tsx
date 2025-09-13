@@ -119,29 +119,29 @@ export default function AdminPage() {
   }
 
   async function updateItem(docId: string | undefined) {
-  if (!docId) {
-    console.error("Cannot update item: docId is undefined");
-    return;
+    if (!docId) {
+      console.error("Cannot update item: docId is undefined");
+      return;
+    }
+
+    // Ensure docId is a string
+    const itemRef = doc(db, "menu", String(docId));
+
+    const updatedData = {
+      name: String(editingForm.name),
+      price: String(editingForm.price),
+      category: String(editingForm.category),
+    };
+
+    try {
+      await updateDoc(itemRef, updatedData);
+      setEditingId(null);
+      setEditingForm({ name: "", price: "", category: "" });
+      fetchMenu();
+    } catch (error) {
+      console.error("Error updating item:", error);
+    }
   }
-
-  // Ensure docId is a string
-  const itemRef = doc(db, "menu", String(docId));
-
-  const updatedData = {
-    name: String(editingForm.name),
-    price: String(editingForm.price),
-    category: String(editingForm.category),
-  };
-
-  try {
-    await updateDoc(itemRef, updatedData);
-    setEditingId(null);
-    setEditingForm({ name: "", price: "", category: "" });
-    fetchMenu();
-  } catch (error) {
-    console.error("Error updating item:", error);
-  }
-}
 
   async function deleteItem(docId: string) {
     if (!docId) return;
@@ -182,9 +182,17 @@ export default function AdminPage() {
       <main className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
         <form
           onSubmit={handleLogin}
-          className="bg-white p-6 rounded-xl shadow-md w-full max-w-sm"
+          className="bg-white p-6 rounded-xl shadow-md w-full max-w-sm border border-gray-300"
         >
-          <h2 className="text-2xl font-bold text-center mb-4">Admin Login</h2>
+          <h2 className="text-2xl font-bold text-center mb-4 text-gray-800">
+            Admin Login
+          </h2>
+
+          {isLocked && (
+            <div className="mb-4 p-2 bg-red-100 border border-red-300 rounded text-red-700 text-center">
+              Account locked. Try again in {countdown} seconds.
+            </div>
+          )}
 
           <label htmlFor="username" className="sr-only">
             Username
@@ -197,7 +205,8 @@ export default function AdminPage() {
             onChange={(e) =>
               setLoginForm({ ...loginForm, username: e.target.value })
             }
-            className="w-full p-2 border rounded-md mb-3"
+            className="w-full p-3 border border-gray-300 rounded-md mb-3 text-gray-800 bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            disabled={isLocked}
           />
 
           <label htmlFor="password" className="sr-only">
@@ -211,14 +220,20 @@ export default function AdminPage() {
             onChange={(e) =>
               setLoginForm({ ...loginForm, password: e.target.value })
             }
-            className="w-full p-2 border rounded-md mb-3"
+            className="w-full p-3 border border-gray-300 rounded-md mb-4 text-gray-800 bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            disabled={isLocked}
           />
 
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700"
+            disabled={isLocked}
+            className={`w-full text-white p-3 rounded-md font-medium ${
+              isLocked
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700"
+            }`}
           >
-            Login
+            {isLocked ? `Locked (${countdown}s)` : "Login"}
           </button>
         </form>
       </main>
@@ -227,21 +242,23 @@ export default function AdminPage() {
 
   // ADMIN DASHBOARD
   return (
-<main className="min-h-screen bg-gray-100 p-4 md:p-8">
+    <main className="min-h-screen bg-gray-50 p-4 md:p-8">
       <div className="max-w-4xl mx-auto space-y-8">
-        <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-center">Admin Dashboard</h1>
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4 p-4 bg-white rounded-xl shadow border border-gray-200">
+          <h1 className="text-3xl font-bold text-gray-800">Admin Dashboard</h1>
           <button
             onClick={handleLogout}
-            className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700"
+            className="bg-gray-700 text-white px-4 py-2 rounded-md hover:bg-gray-800 font-medium"
           >
             Logout
           </button>
         </div>
 
         {/* CATEGORY MANAGEMENT */}
-<section className="bg-gray-100 md:bg-white p-4 md:p-6 rounded-xl shadow">
-          <h2 className="text-xl font-semibold mb-4">Manage Categories</h2>
+        <section className="bg-white p-4 md:p-6 rounded-xl shadow border border-gray-200">
+          <h2 className="text-xl font-semibold mb-4 text-gray-800">
+            Manage Categories
+          </h2>
 
           <div className="flex flex-col md:flex-row gap-3 mb-4">
             <label htmlFor="newCategory" className="sr-only">
@@ -252,11 +269,11 @@ export default function AdminPage() {
               placeholder="New Category"
               value={newCategory}
               onChange={(e) => setNewCategory(e.target.value)}
-              className="flex-1 p-2 border rounded-md"
+              className="flex-1 p-3 border border-gray-300 rounded-md text-gray-800 bg-white"
             />
             <button
               onClick={addCategory}
-              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 font-medium"
             >
               Add
             </button>
@@ -270,7 +287,7 @@ export default function AdminPage() {
               id="categoryToDelete"
               value={categoryToDelete}
               onChange={(e) => setCategoryToDelete(e.target.value)}
-              className="flex-1 p-2 border rounded-md"
+              className="flex-1 p-3 border border-gray-300 rounded-md text-gray-800 bg-white"
             >
               <option value="">Select Category to Delete</option>
               {categories.map((cat, idx) => (
@@ -281,7 +298,7 @@ export default function AdminPage() {
             </select>
             <button
               onClick={deleteCategory}
-              className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700"
+              className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 font-medium"
             >
               Delete
             </button>
@@ -291,7 +308,7 @@ export default function AdminPage() {
             {categories.map((cat, idx) => (
               <span
                 key={idx}
-                className="px-3 py-1 bg-gray-200 rounded-full text-sm"
+                className="px-3 py-1 bg-gray-200 rounded-full text-sm text-gray-800 font-medium"
               >
                 {cat.name}
               </span>
@@ -300,8 +317,10 @@ export default function AdminPage() {
         </section>
 
         {/* ADD NEW MENU ITEM */}
-<section className="bg-gray-100 md:bg-white p-4 md:p-6 rounded-xl shadow">
-          <h2 className="text-xl font-semibold mb-4">Add New Menu Item</h2>
+        <section className="bg-white p-4 md:p-6 rounded-xl shadow border border-gray-200">
+          <h2 className="text-xl font-semibold mb-4 text-gray-800">
+            Add New Menu Item
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
             <label htmlFor="newItemName" className="sr-only">
               Item Name
@@ -313,7 +332,7 @@ export default function AdminPage() {
               onChange={(e) =>
                 setNewItemForm({ ...newItemForm, name: e.target.value })
               }
-              className="p-2 border rounded-md"
+              className="p-3 border border-gray-300 rounded-md text-gray-800 bg-white"
             />
 
             <label htmlFor="newItemPrice" className="sr-only">
@@ -326,7 +345,7 @@ export default function AdminPage() {
               onChange={(e) =>
                 setNewItemForm({ ...newItemForm, price: e.target.value })
               }
-              className="p-2 border rounded-md"
+              className="p-3 border border-gray-300 rounded-md text-gray-800 bg-white"
             />
 
             <label htmlFor="newItemCategory" className="sr-only">
@@ -338,7 +357,7 @@ export default function AdminPage() {
               onChange={(e) =>
                 setNewItemForm({ ...newItemForm, category: e.target.value })
               }
-              className="p-2 border rounded-md"
+              className="p-3 border border-gray-300 rounded-md text-gray-800 bg-white"
             >
               <option value="">Select Category</option>
               {categories.map((cat, idx) => (
@@ -350,7 +369,7 @@ export default function AdminPage() {
 
             <button
               onClick={addItem}
-              className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
+              className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 font-medium"
             >
               Add Item
             </button>
@@ -358,17 +377,22 @@ export default function AdminPage() {
         </section>
 
         {/* MENU ITEMS */}
-<section className="bg-gray-100 md:bg-white p-4 md:p-6 rounded-xl shadow">
-          <h2 className="text-xl font-semibold mb-4">Menu Items</h2>
+        <section className="bg-white p-4 md:p-6 rounded-xl shadow border border-gray-200">
+          <h2 className="text-xl font-semibold mb-4 text-gray-800">
+            Menu Items
+          </h2>
           <div className="space-y-3">
             {menu.map((item) => (
               <div
                 key={item.id}
-                className="flex flex-col md:flex-row md:items-center justify-between gap-2 p-3 border rounded-lg"
+                className="flex flex-col md:flex-row md:items-center justify-between gap-2 p-4 border border-gray-300 rounded-lg bg-gray-50"
               >
                 {editingId === item.id ? (
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-2 flex-1">
-                    <label htmlFor={`editName-${item.id}`} className="sr-only">
+                    <label
+                      htmlFor={`editName-${item.id}`}
+                      className="sr-only"
+                    >
                       Edit Name
                     </label>
                     <input
@@ -377,10 +401,13 @@ export default function AdminPage() {
                       onChange={(e) =>
                         setEditingForm({ ...editingForm, name: e.target.value })
                       }
-                      className="p-2 border rounded-md"
+                      className="p-2 border border-gray-300 rounded-md text-gray-800 bg-white"
                     />
 
-                    <label htmlFor={`editPrice-${item.id}`} className="sr-only">
+                    <label
+                      htmlFor={`editPrice-${item.id}`}
+                      className="sr-only"
+                    >
                       Edit Price
                     </label>
                     <input
@@ -389,7 +416,7 @@ export default function AdminPage() {
                       onChange={(e) =>
                         setEditingForm({ ...editingForm, price: e.target.value })
                       }
-                      className="p-2 border rounded-md"
+                      className="p-2 border border-gray-300 rounded-md text-gray-800 bg-white"
                     />
 
                     <label
@@ -407,7 +434,7 @@ export default function AdminPage() {
                           category: e.target.value,
                         })
                       }
-                      className="p-2 border rounded-md"
+                      className="p-2 border border-gray-300 rounded-md text-gray-800 bg-white"
                     >
                       <option value="">Select Category</option>
                       {categories.map((cat, idx) => (
@@ -422,14 +449,14 @@ export default function AdminPage() {
                         onClick={() => {
                           if (item.id) updateItem(item.id);
                         }}
-                        className="bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700"
+                        className="bg-blue-600 text-white px-3 py-2 rounded-md hover:bg-blue-700 font-medium"
                       >
                         Save
                       </button>
 
                       <button
                         onClick={() => setEditingId(null)}
-                        className="bg-gray-400 text-white px-3 py-1 rounded-md hover:bg-gray-500"
+                        className="bg-gray-500 text-white px-3 py-2 rounded-md hover:bg-gray-600 font-medium"
                       >
                         Cancel
                       </button>
@@ -437,13 +464,14 @@ export default function AdminPage() {
                   </div>
                 ) : (
                   <>
-                    <span className="flex-1">
-                      <strong>{item.name}</strong> - {item.price} ({item.category})
+                    <span className="flex-1 text-gray-800">
+                      <strong className="font-semibold">{item.name}</strong> - {item.price} (
+                      <span className="text-blue-700">{item.category}</span>)
                     </span>
                     <div className="flex gap-2">
                       <button
                         onClick={() => deleteItem(item.id!)}
-                        className="bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700"
+                        className="bg-red-600 text-white px-3 py-2 rounded-md hover:bg-red-700 font-medium"
                       >
                         Delete
                       </button>
@@ -456,7 +484,7 @@ export default function AdminPage() {
                             category: item.category,
                           });
                         }}
-                        className="bg-yellow-500 text-white px-3 py-1 rounded-md hover:bg-yellow-600"
+                        className="bg-yellow-500 text-white px-3 py-2 rounded-md hover:bg-yellow-600 font-medium"
                       >
                         Edit
                       </button>
