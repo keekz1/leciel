@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation"; // for redirect
 import { db } from "@/lib/firebase";
 import {
   collection,
@@ -25,6 +26,7 @@ interface Category {
 }
 
 export default function AdminPage() {
+  const router = useRouter();
   const [menu, setMenu] = useState<MenuItem[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [newItemForm, setNewItemForm] = useState<Omit<MenuItem, "id">>({
@@ -40,6 +42,14 @@ export default function AdminPage() {
   });
   const [newCategory, setNewCategory] = useState("");
   const [categoryToDelete, setCategoryToDelete] = useState("");
+
+  // ✅ Check if logged in
+  useEffect(() => {
+    const loggedIn = localStorage.getItem("admin-auth");
+    if (!loggedIn) {
+      router.push("/admin/login");
+    }
+  }, [router]);
 
   async function fetchMenu() {
     const querySnapshot = await getDocs(collection(db, "menu"));
@@ -108,10 +118,25 @@ export default function AdminPage() {
     setCategoryToDelete("");
   }
 
+  // ✅ Logout function
+  function handleLogout() {
+    localStorage.removeItem("admin-auth"); // clear auth token
+    router.push("/admin/login"); // redirect to login
+  }
+
   return (
     <main className="min-h-screen bg-gray-100 p-4 md:p-8">
       <div className="max-w-4xl mx-auto space-y-8">
-        <h1 className="text-3xl font-bold text-center">Admin Dashboard</h1>
+        {/* Header with Logout */}
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+          <button
+            onClick={handleLogout}
+            className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700"
+          >
+            Logout
+          </button>
+        </div>
 
         {/* CATEGORY MANAGEMENT */}
         <section className="bg-white p-4 md:p-6 rounded-xl shadow">
