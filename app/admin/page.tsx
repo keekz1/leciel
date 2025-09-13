@@ -179,295 +179,248 @@ export default function AdminPage() {
   // LOGIN SCREEN
   if (!isAuthenticated) {
     return (
-      <main className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-        <form
-          onSubmit={handleLogin}
-          className="bg-white p-6 rounded-xl shadow-md w-full max-w-sm"
+  <main className="min-h-screen bg-gray-300 p-4 md:p-8">
+    <div className="max-w-4xl mx-auto space-y-8">
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold text-center">Admin Dashboard</h1>
+        <button
+          onClick={handleLogout}
+          className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700"
         >
-          <h2 className="text-2xl font-bold text-center mb-4">Admin Login</h2>
+          Logout
+        </button>
+      </div>
 
-          <label htmlFor="username" className="sr-only">
-            Username
+      {/* CATEGORY MANAGEMENT */}
+      <section className="bg-gray-200 md:bg-white p-4 md:p-6 rounded-xl shadow">
+        <h2 className="text-xl font-semibold mb-4">Manage Categories</h2>
+
+        <div className="flex flex-col md:flex-row gap-3 mb-4">
+          <label htmlFor="newCategory" className="sr-only">
+            New Category
           </label>
           <input
-            id="username"
-            type="text"
-            placeholder="Username"
-            value={loginForm.username}
-            onChange={(e) =>
-              setLoginForm({ ...loginForm, username: e.target.value })
-            }
-            className="w-full p-2 border rounded-md mb-3"
+            id="newCategory"
+            placeholder="New Category"
+            value={newCategory}
+            onChange={(e) => setNewCategory(e.target.value)}
+            className="flex-1 p-2 border rounded-md"
           />
-
-          <label htmlFor="password" className="sr-only">
-            Password
-          </label>
-          <input
-            id="password"
-            type="password"
-            placeholder="Password"
-            value={loginForm.password}
-            onChange={(e) =>
-              setLoginForm({ ...loginForm, password: e.target.value })
-            }
-            className="w-full p-2 border rounded-md mb-3"
-          />
-
           <button
-            type="submit"
-            className="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700"
+            onClick={addCategory}
+            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
           >
-            Login
-          </button>
-        </form>
-      </main>
-    );
-  }
-
-  // ADMIN DASHBOARD
-  return (
-<main className="min-h-screen bg-gray-100 p-4 md:p-8">
-      <div className="max-w-4xl mx-auto space-y-8">
-        <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-center">Admin Dashboard</h1>
-          <button
-            onClick={handleLogout}
-            className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700"
-          >
-            Logout
+            Add
           </button>
         </div>
 
-        {/* CATEGORY MANAGEMENT */}
-<section className="bg-gray-100 md:bg-white p-4 md:p-6 rounded-xl shadow">
-          <h2 className="text-xl font-semibold mb-4">Manage Categories</h2>
-
-          <div className="flex flex-col md:flex-row gap-3 mb-4">
-            <label htmlFor="newCategory" className="sr-only">
-              New Category
-            </label>
-            <input
-              id="newCategory"
-              placeholder="New Category"
-              value={newCategory}
-              onChange={(e) => setNewCategory(e.target.value)}
-              className="flex-1 p-2 border rounded-md"
-            />
-            <button
-              onClick={addCategory}
-              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
-            >
-              Add
-            </button>
-          </div>
-
-          <div className="flex flex-col md:flex-row gap-3 mb-4">
-            <label htmlFor="categoryToDelete" className="sr-only">
-              Select Category to Delete
-            </label>
-            <select
-              id="categoryToDelete"
-              value={categoryToDelete}
-              onChange={(e) => setCategoryToDelete(e.target.value)}
-              className="flex-1 p-2 border rounded-md"
-            >
-              <option value="">Select Category to Delete</option>
-              {categories.map((cat, idx) => (
-                <option key={idx} value={cat.name}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
-            <button
-              onClick={deleteCategory}
-              className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700"
-            >
-              Delete
-            </button>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
+        <div className="flex flex-col md:flex-row gap-3 mb-4">
+          <label htmlFor="categoryToDelete" className="sr-only">
+            Select Category to Delete
+          </label>
+          <select
+            id="categoryToDelete"
+            value={categoryToDelete}
+            onChange={(e) => setCategoryToDelete(e.target.value)}
+            className="flex-1 p-2 border rounded-md"
+          >
+            <option value="">Select Category to Delete</option>
             {categories.map((cat, idx) => (
-              <span
-                key={idx}
-                className="px-3 py-1 bg-gray-200 rounded-full text-sm"
-              >
+              <option key={idx} value={cat.name}>
                 {cat.name}
-              </span>
+              </option>
             ))}
-          </div>
-        </section>
+          </select>
+          <button
+            onClick={deleteCategory}
+            className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700"
+          >
+            Delete
+          </button>
+        </div>
 
-        {/* ADD NEW MENU ITEM */}
-<section className="bg-gray-100 md:bg-white p-4 md:p-6 rounded-xl shadow">
-          <h2 className="text-xl font-semibold mb-4">Add New Menu Item</h2>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
-            <label htmlFor="newItemName" className="sr-only">
-              Item Name
-            </label>
-            <input
-              id="newItemName"
-              placeholder="Name"
-              value={newItemForm.name}
-              onChange={(e) =>
-                setNewItemForm({ ...newItemForm, name: e.target.value })
-              }
-              className="p-2 border rounded-md"
-            />
-
-            <label htmlFor="newItemPrice" className="sr-only">
-              Item Price
-            </label>
-            <input
-              id="newItemPrice"
-              placeholder="Price"
-              value={newItemForm.price}
-              onChange={(e) =>
-                setNewItemForm({ ...newItemForm, price: e.target.value })
-              }
-              className="p-2 border rounded-md"
-            />
-
-            <label htmlFor="newItemCategory" className="sr-only">
-              Select Category
-            </label>
-            <select
-              id="newItemCategory"
-              value={newItemForm.category}
-              onChange={(e) =>
-                setNewItemForm({ ...newItemForm, category: e.target.value })
-              }
-              className="p-2 border rounded-md"
+        <div className="flex flex-wrap gap-2">
+          {categories.map((cat, idx) => (
+            <span
+              key={idx}
+              className="px-3 py-1 bg-gray-300 rounded-full text-sm"
             >
-              <option value="">Select Category</option>
-              {categories.map((cat, idx) => (
-                <option key={idx} value={cat.name}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
+              {cat.name}
+            </span>
+          ))}
+        </div>
+      </section>
 
-            <button
-              onClick={addItem}
-              className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
+      {/* ADD NEW MENU ITEM */}
+      <section className="bg-gray-200 md:bg-white p-4 md:p-6 rounded-xl shadow">
+        <h2 className="text-xl font-semibold mb-4">Add New Menu Item</h2>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
+          <label htmlFor="newItemName" className="sr-only">
+            Item Name
+          </label>
+          <input
+            id="newItemName"
+            placeholder="Name"
+            value={newItemForm.name}
+            onChange={(e) =>
+              setNewItemForm({ ...newItemForm, name: e.target.value })
+            }
+            className="p-2 border rounded-md"
+          />
+
+          <label htmlFor="newItemPrice" className="sr-only">
+            Item Price
+          </label>
+          <input
+            id="newItemPrice"
+            placeholder="Price"
+            value={newItemForm.price}
+            onChange={(e) =>
+              setNewItemForm({ ...newItemForm, price: e.target.value })
+            }
+            className="p-2 border rounded-md"
+          />
+
+          <label htmlFor="newItemCategory" className="sr-only">
+            Select Category
+          </label>
+          <select
+            id="newItemCategory"
+            value={newItemForm.category}
+            onChange={(e) =>
+              setNewItemForm({ ...newItemForm, category: e.target.value })
+            }
+            className="p-2 border rounded-md"
+          >
+            <option value="">Select Category</option>
+            {categories.map((cat, idx) => (
+              <option key={idx} value={cat.name}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
+
+          <button
+            onClick={addItem}
+            className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
+          >
+            Add Item
+          </button>
+        </div>
+      </section>
+
+      {/* MENU ITEMS */}
+      <section className="bg-gray-200 md:bg-white p-4 md:p-6 rounded-xl shadow">
+        <h2 className="text-xl font-semibold mb-4">Menu Items</h2>
+        <div className="space-y-3">
+          {menu.map((item) => (
+            <div
+              key={item.id}
+              className="flex flex-col md:flex-row md:items-center justify-between gap-2 p-3 border rounded-lg bg-gray-100 md:bg-white"
             >
-              Add Item
-            </button>
-          </div>
-        </section>
+              {editingId === item.id ? (
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-2 flex-1">
+                  <label htmlFor={`editName-${item.id}`} className="sr-only">
+                    Edit Name
+                  </label>
+                  <input
+                    id={`editName-${item.id}`}
+                    value={editingForm.name}
+                    onChange={(e) =>
+                      setEditingForm({ ...editingForm, name: e.target.value })
+                    }
+                    className="p-2 border rounded-md"
+                  />
 
-        {/* MENU ITEMS */}
-<section className="bg-gray-100 md:bg-white p-4 md:p-6 rounded-xl shadow">
-          <h2 className="text-xl font-semibold mb-4">Menu Items</h2>
-          <div className="space-y-3">
-            {menu.map((item) => (
-              <div
-                key={item.id}
-                className="flex flex-col md:flex-row md:items-center justify-between gap-2 p-3 border rounded-lg"
-              >
-                {editingId === item.id ? (
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-2 flex-1">
-                    <label htmlFor={`editName-${item.id}`} className="sr-only">
-                      Edit Name
-                    </label>
-                    <input
-                      id={`editName-${item.id}`}
-                      value={editingForm.name}
-                      onChange={(e) =>
-                        setEditingForm({ ...editingForm, name: e.target.value })
-                      }
-                      className="p-2 border rounded-md"
-                    />
+                  <label htmlFor={`editPrice-${item.id}`} className="sr-only">
+                    Edit Price
+                  </label>
+                  <input
+                    id={`editPrice-${item.id}`}
+                    value={editingForm.price}
+                    onChange={(e) =>
+                      setEditingForm({
+                        ...editingForm,
+                        price: e.target.value,
+                      })
+                    }
+                    className="p-2 border rounded-md"
+                  />
 
-                    <label htmlFor={`editPrice-${item.id}`} className="sr-only">
-                      Edit Price
-                    </label>
-                    <input
-                      id={`editPrice-${item.id}`}
-                      value={editingForm.price}
-                      onChange={(e) =>
-                        setEditingForm({ ...editingForm, price: e.target.value })
-                      }
-                      className="p-2 border rounded-md"
-                    />
+                  <label
+                    htmlFor={`editCategory-${item.id}`}
+                    className="sr-only"
+                  >
+                    Edit Category
+                  </label>
+                  <select
+                    id={`editCategory-${item.id}`}
+                    value={editingForm.category}
+                    onChange={(e) =>
+                      setEditingForm({
+                        ...editingForm,
+                        category: e.target.value,
+                      })
+                    }
+                    className="p-2 border rounded-md"
+                  >
+                    <option value="">Select Category</option>
+                    {categories.map((cat, idx) => (
+                      <option key={idx} value={cat.name}>
+                        {cat.name}
+                      </option>
+                    ))}
+                  </select>
 
-                    <label
-                      htmlFor={`editCategory-${item.id}`}
-                      className="sr-only"
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => updateItem(item.id)}
+                      className="bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700"
                     >
-                      Edit Category
-                    </label>
-                    <select
-                      id={`editCategory-${item.id}`}
-                      value={editingForm.category}
-                      onChange={(e) =>
-                        setEditingForm({
-                          ...editingForm,
-                          category: e.target.value,
-                        })
-                      }
-                      className="p-2 border rounded-md"
+                      Save
+                    </button>
+                    <button
+                      onClick={() => setEditingId(null)}
+                      className="bg-gray-400 text-white px-3 py-1 rounded-md hover:bg-gray-500"
                     >
-                      <option value="">Select Category</option>
-                      {categories.map((cat, idx) => (
-                        <option key={idx} value={cat.name}>
-                          {cat.name}
-                        </option>
-                      ))}
-                    </select>
-
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => {
-                          if (item.id) updateItem(item.id);
-                        }}
-                        className="bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700"
-                      >
-                        Save
-                      </button>
-
-                      <button
-                        onClick={() => setEditingId(null)}
-                        className="bg-gray-400 text-white px-3 py-1 rounded-md hover:bg-gray-500"
-                      >
-                        Cancel
-                      </button>
-                    </div>
+                      Cancel
+                    </button>
                   </div>
-                ) : (
-                  <>
-                    <span className="flex-1">
-                      <strong>{item.name}</strong> - {item.price} ({item.category})
-                    </span>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => deleteItem(item.id!)}
-                        className="bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700"
-                      >
-                        Delete
-                      </button>
-                      <button
-                        onClick={() => {
-                          setEditingId(item.id!);
-                          setEditingForm({
-                            name: item.name,
-                            price: item.price,
-                            category: item.category,
-                          });
-                        }}
-                        className="bg-yellow-500 text-white px-3 py-1 rounded-md hover:bg-yellow-600"
-                      >
-                        Edit
-                      </button>
-                    </div>
-                  </>
-                )}
-              </div>
-            ))}
-          </div>
-        </section>
-      </div>
-    </main>
-  );
+                </div>
+              ) : (
+                <>
+                  <span className="flex-1">
+                    <strong>{item.name}</strong> - {item.price} ({item.category})
+                  </span>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => deleteItem(item.id!)}
+                      className="bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700"
+                    >
+                      Delete
+                    </button>
+                    <button
+                      onClick={() => {
+                        setEditingId(item.id!);
+                        setEditingForm({
+                          name: item.name,
+                          price: item.price,
+                          category: item.category,
+                        });
+                      }}
+                      className="bg-yellow-500 text-white px-3 py-1 rounded-md hover:bg-yellow-600"
+                    >
+                      Edit
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  </main>
+);
+  }
 }
