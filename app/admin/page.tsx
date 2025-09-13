@@ -227,7 +227,7 @@ export default function AdminPage() {
 
   // ADMIN DASHBOARD
   return (
-    <main className="min-h-screen bg-gray-100 p-4 md:p-8">
+<main className="min-h-screen bg-gray-100 p-4 md:p-8">
       <div className="max-w-4xl mx-auto space-y-8">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold text-center">Admin Dashboard</h1>
@@ -240,7 +240,7 @@ export default function AdminPage() {
         </div>
 
         {/* CATEGORY MANAGEMENT */}
-        <section className="bg-white p-4 md:p-6 rounded-xl shadow">
+<section className="bg-gray-100 md:bg-white p-4 md:p-6 rounded-xl shadow">
           <h2 className="text-xl font-semibold mb-4">Manage Categories</h2>
 
           <div className="flex flex-col md:flex-row gap-3 mb-4">
@@ -300,7 +300,7 @@ export default function AdminPage() {
         </section>
 
         {/* ADD NEW MENU ITEM */}
-        <section className="bg-white p-4 md:p-6 rounded-xl shadow">
+<section className="bg-gray-100 md:bg-white p-4 md:p-6 rounded-xl shadow">
           <h2 className="text-xl font-semibold mb-4">Add New Menu Item</h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
             <label htmlFor="newItemName" className="sr-only">
@@ -358,7 +358,7 @@ export default function AdminPage() {
         </section>
 
         {/* MENU ITEMS */}
-        <section className="bg-white p-4 md:p-6 rounded-xl shadow">
+<section className="bg-gray-100 md:bg-white p-4 md:p-6 rounded-xl shadow">
           <h2 className="text-xl font-semibold mb-4">Menu Items</h2>
           <div className="space-y-3">
             {menu.map((item) => (
