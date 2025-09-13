@@ -1,0 +1,35 @@
+.home-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* centers horizontally */
+  justify-content: center; /* centers vertically if needed */
+  min-height: 100vh; /* make it full viewport height */
+  padding: 2rem;
+}
+
+.header {
+  text-align: center;
+}
+
+.header-logo {
+  width: 200px;
+  max-width: 80%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  display: block;
+  margin: 0 auto; /* ensures horizontal centering */
+}
+
+.header-tagline {
+  margin-top: 0.5rem;
+  font-size: 1.2rem;
+  color: #fff1f1;
+  font-style: italic;
+}
+
+.menu-section {
+  width: 100%;
+  max-width: 1200px;
+  margin-top: 2rem;
+}

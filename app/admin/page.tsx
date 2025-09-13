@@ -28,21 +28,46 @@ export default function AdminPage() {
   // AUTH
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loginForm, setLoginForm] = useState({ username: "", password: "" });
+ const [attempts, setAttempts] = useState(0); // login attempts
+const [isLocked, setIsLocked] = useState(false); // lock state
+const [countdown, setCountdown] = useState(20); // countdown seconds
+  const ADMIN_USERNAME = "waelbouaziz";
+  const ADMIN_PASSWORD = "wael90@leciel@2025"; // 🔒 simple admin login
 
-  const ADMIN_USERNAME = "admin";
-  const ADMIN_PASSWORD = "12345"; // 🔒 simple admin login
+function handleLogin(e: React.FormEvent) {
+  e.preventDefault();
+  if (isLocked) return; // prevent login if locked
 
-  function handleLogin(e: React.FormEvent) {
-    e.preventDefault();
-    if (
-      loginForm.username === ADMIN_USERNAME &&
-      loginForm.password === ADMIN_PASSWORD
-    ) {
-      setIsAuthenticated(true);
+  if (
+    loginForm.username === ADMIN_USERNAME &&
+    loginForm.password === ADMIN_PASSWORD
+  ) {
+    setIsAuthenticated(true);
+    setAttempts(0);
+  } else {
+    const newAttempts = attempts + 1;
+    setAttempts(newAttempts);
+
+    if (newAttempts >= 7) {
+      setIsLocked(true);
+      setCountdown(20);
+
+      const timer = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            setIsLocked(false);
+            setAttempts(0); // reset attempts after timeout
+            return 20; // reset countdown
+          }
+          return prev - 1;
+        });
+      }, 1000);
     } else {
-      alert("Invalid username or password");
+      alert(`Invalid username or password. Attempt ${newAttempts}/7`);
     }
   }
+}
 
   function handleLogout() {
     setIsAuthenticated(false);
