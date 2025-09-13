@@ -4,7 +4,7 @@ import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Le Ciel Lounge', // this sets the browser title
-  description: '  Le Ciel Lounge', // optional description
+  description: ' Sunset View . Good Vibes', // optional description
   openGraph: {
     title: 'Le Ciel Lounge',
       siteName: 'Le Ciel Lounge',

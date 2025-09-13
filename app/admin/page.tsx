@@ -31,8 +31,8 @@ export default function AdminPage() {
   const [attempts, setAttempts] = useState(0);
   const [isLocked, setIsLocked] = useState(false);
   const [countdown, setCountdown] = useState(20);
-  const ADMIN_USERNAME = "kii";
-  const ADMIN_PASSWORD = "123";
+  const ADMIN_USERNAME = "waelbouaziz";
+  const ADMIN_PASSWORD = "wael90@leciel@2025";
 
   function handleLogin(e: React.FormEvent) {
     e.preventDefault();
