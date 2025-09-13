@@ -2,6 +2,7 @@
 
 import Menu from "./components/Menu";
 import "./Home.css";
+import Footer from './components/Footer';
 
 export default function Home() {
   return (
@@ -17,8 +18,9 @@ export default function Home() {
 
   <section className="menu-section">
     <Menu />
+    <Footer/>
   </section>
+  
 </main>
-
-  );
+   );
 }
