@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation"; // for redirect
 import { db } from "@/lib/firebase";
 import {
   collection,
@@ -14,7 +13,7 @@ import {
   where,
 } from "firebase/firestore";
 
-export interface MenuItem {
+interface MenuItem {
   id?: string;
   name: string;
   price: string;
@@ -26,7 +25,31 @@ interface Category {
 }
 
 export default function AdminPage() {
-  const router = useRouter();
+  // AUTH
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loginForm, setLoginForm] = useState({ username: "", password: "" });
+
+  const ADMIN_USERNAME = "admin";
+  const ADMIN_PASSWORD = "12345"; // 🔒 simple admin login
+
+  function handleLogin(e: React.FormEvent) {
+    e.preventDefault();
+    if (
+      loginForm.username === ADMIN_USERNAME &&
+      loginForm.password === ADMIN_PASSWORD
+    ) {
+      setIsAuthenticated(true);
+    } else {
+      alert("Invalid username or password");
+    }
+  }
+
+  function handleLogout() {
+    setIsAuthenticated(false);
+    setLoginForm({ username: "", password: "" });
+  }
+
+  // MENU + CATEGORIES
   const [menu, setMenu] = useState<MenuItem[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [newItemForm, setNewItemForm] = useState<Omit<MenuItem, "id">>({
@@ -43,14 +66,6 @@ export default function AdminPage() {
   const [newCategory, setNewCategory] = useState("");
   const [categoryToDelete, setCategoryToDelete] = useState("");
 
-  // ✅ Check if logged in
-  useEffect(() => {
-    const loggedIn = localStorage.getItem("admin-auth");
-    if (!loggedIn) {
-      router.push("/admin/login");
-    }
-  }, [router]);
-
   async function fetchMenu() {
     const querySnapshot = await getDocs(collection(db, "menu"));
     const items = querySnapshot.docs.map((docSnap) => {
@@ -66,8 +81,8 @@ export default function AdminPage() {
   }
 
   useEffect(() => {
-    fetchMenu();
-  }, []);
+    if (isAuthenticated) fetchMenu();
+  }, [isAuthenticated]);
 
   async function addItem() {
     if (!newItemForm.name || !newItemForm.price || !newItemForm.category) return;
@@ -104,10 +119,7 @@ export default function AdminPage() {
     );
     if (!confirmDelete) return;
 
-    const q = query(
-      collection(db, "menu"),
-      where("category", "==", categoryToDelete)
-    );
+    const q = query(collection(db, "menu"), where("category", "==", categoryToDelete));
     const querySnapshot = await getDocs(q);
     const batchDeletes = querySnapshot.docs.map((docItem) =>
       deleteDoc(doc(db, "menu", docItem.id))
@@ -118,21 +130,53 @@ export default function AdminPage() {
     setCategoryToDelete("");
   }
 
-  // ✅ Logout function
-  function handleLogout() {
-    localStorage.removeItem("admin-auth"); // clear auth token
-    router.push("/admin/login"); // redirect to login
+  // LOGIN SCREEN
+  if (!isAuthenticated) {
+    return (
+      <main className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+        <form
+          onSubmit={handleLogin}
+          className="bg-white p-6 rounded-xl shadow-md w-full max-w-sm"
+        >
+          <h2 className="text-2xl font-bold text-center mb-4">Admin Login</h2>
+          <input
+            type="text"
+            placeholder="Username"
+            value={loginForm.username}
+            onChange={(e) =>
+              setLoginForm({ ...loginForm, username: e.target.value })
+            }
+            className="w-full p-2 border rounded-md mb-3"
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={loginForm.password}
+            onChange={(e) =>
+              setLoginForm({ ...loginForm, password: e.target.value })
+            }
+            className="w-full p-2 border rounded-md mb-3"
+          />
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700"
+          >
+            Login
+          </button>
+        </form>
+      </main>
+    );
   }
 
+  // ADMIN DASHBOARD
   return (
     <main className="min-h-screen bg-gray-100 p-4 md:p-8">
       <div className="max-w-4xl mx-auto space-y-8">
-        {/* Header with Logout */}
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+          <h1 className="text-3xl font-bold text-center">Admin Dashboard</h1>
           <button
             onClick={handleLogout}
-            className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700"
+            className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700"
           >
             Logout
           </button>
@@ -141,7 +185,6 @@ export default function AdminPage() {
         {/* CATEGORY MANAGEMENT */}
         <section className="bg-white p-4 md:p-6 rounded-xl shadow">
           <h2 className="text-xl font-semibold mb-4">Manage Categories</h2>
-
           <div className="flex flex-col md:flex-row gap-3 mb-4">
             <input
               placeholder="New Category"
@@ -157,7 +200,6 @@ export default function AdminPage() {
               Add
             </button>
           </div>
-
           <div className="flex flex-col md:flex-row gap-3 mb-4">
             <select
               aria-label="Select Category to Delete"
@@ -167,9 +209,7 @@ export default function AdminPage() {
             >
               <option value="">Select Category to Delete</option>
               {categories.map((cat, idx) => (
-                <option key={idx} value={cat.name}>
-                  {cat.name}
-                </option>
+                <option key={idx} value={cat.name}>{cat.name}</option>
               ))}
             </select>
             <button
@@ -179,13 +219,9 @@ export default function AdminPage() {
               Delete
             </button>
           </div>
-
           <div className="flex flex-wrap gap-2">
             {categories.map((cat, idx) => (
-              <span
-                key={idx}
-                className="px-3 py-1 bg-gray-200 rounded-full text-sm"
-              >
+              <span key={idx} className="px-3 py-1 bg-gray-200 rounded-full text-sm">
                 {cat.name}
               </span>
             ))}
@@ -195,7 +231,6 @@ export default function AdminPage() {
         {/* ADD NEW MENU ITEM */}
         <section className="bg-white p-4 md:p-6 rounded-xl shadow">
           <h2 className="text-xl font-semibold mb-4">Add New Menu Item</h2>
-
           <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
             <input
               placeholder="Name"
@@ -225,9 +260,7 @@ export default function AdminPage() {
             >
               <option value="">Select Category</option>
               {categories.map((cat, idx) => (
-                <option key={idx} value={cat.name}>
-                  {cat.name}
-                </option>
+                <option key={idx} value={cat.name}>{cat.name}</option>
               ))}
             </select>
             <button
@@ -244,20 +277,14 @@ export default function AdminPage() {
           <h2 className="text-xl font-semibold mb-4">Menu Items</h2>
           <div className="space-y-3">
             {menu.map((item) => (
-              <div
-                key={item.id}
-                className="flex flex-col md:flex-row md:items-center justify-between gap-2 p-3 border rounded-lg"
-              >
+              <div key={item.id} className="flex flex-col md:flex-row md:items-center justify-between gap-2 p-3 border rounded-lg">
                 {editingId === item.id ? (
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-2 flex-1">
                     <input
                       aria-label="Edit Name"
                       value={editingForm.name}
                       onChange={(e) =>
-                        setEditingForm({
-                          ...editingForm,
-                          name: e.target.value,
-                        })
+                        setEditingForm({ ...editingForm, name: e.target.value })
                       }
                       className="p-2 border rounded-md"
                     />
@@ -265,10 +292,7 @@ export default function AdminPage() {
                       aria-label="Edit Price"
                       value={editingForm.price}
                       onChange={(e) =>
-                        setEditingForm({
-                          ...editingForm,
-                          price: e.target.value,
-                        })
+                        setEditingForm({ ...editingForm, price: e.target.value })
                       }
                       className="p-2 border rounded-md"
                     />
@@ -276,18 +300,13 @@ export default function AdminPage() {
                       aria-label="Edit Category"
                       value={editingForm.category}
                       onChange={(e) =>
-                        setEditingForm({
-                          ...editingForm,
-                          category: e.target.value,
-                        })
+                        setEditingForm({ ...editingForm, category: e.target.value })
                       }
                       className="p-2 border rounded-md"
                     >
                       <option value="">Select Category</option>
                       {categories.map((cat, idx) => (
-                        <option key={idx} value={cat.name}>
-                          {cat.name}
-                        </option>
+                        <option key={idx} value={cat.name}>{cat.name}</option>
                       ))}
                     </select>
                     <div className="flex gap-2">
@@ -308,8 +327,7 @@ export default function AdminPage() {
                 ) : (
                   <>
                     <span className="flex-1">
-                      <strong>{item.name}</strong> - {item.price} (
-                      {item.category})
+                      <strong>{item.name}</strong> - {item.price} ({item.category})
                     </span>
                     <div className="flex gap-2">
                       <button
@@ -321,11 +339,7 @@ export default function AdminPage() {
                       <button
                         onClick={() => {
                           setEditingId(item.id!);
-                          setEditingForm({
-                            name: item.name,
-                            price: item.price,
-                            category: item.category,
-                          });
+                          setEditingForm({ name: item.name, price: item.price, category: item.category });
                         }}
                         className="bg-yellow-500 text-white px-3 py-1 rounded-md hover:bg-yellow-600"
                       >
