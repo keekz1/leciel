@@ -14,21 +14,9 @@ interface MenuItemData {
   category: string;
 }
 
-const categories = [
-  "All",
-  "Cold Drinks",
-  "Hot Drinks",
-  "Alcohol",
-  "Crackers",
-  "Shisha",
-  "Desserts",
-  "Sajj",
-  "Sandwiches",
-  "Plates",
-];
-
 export default function Menu() {
   const [menuItems, setMenuItems] = useState<MenuItemData[]>([]);
+  const [categories, setCategories] = useState<string[]>(["All"]);
   const [selectedCategory, setSelectedCategory] = useState("All");
 
   useEffect(() => {
@@ -39,6 +27,12 @@ export default function Menu() {
         return { id: doc.id, ...data };
       });
       setMenuItems(items);
+
+      // Extract unique categories from menu items
+      const uniqueCategories = Array.from(
+        new Set(items.map((item) => item.category))
+      );
+      setCategories(["All", ...uniqueCategories]);
     }
     fetchMenu();
   }, []);
