@@ -37,3 +37,80 @@
   padding: 1rem;
   border-radius: 8px;
 }
+/* Location button */
+.location-btn {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background: #ffc857;
+  border: none;
+  border-radius: 50%;
+  padding: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.location-btn:hover {
+  background: #ffb627;
+}
+
+/* Location popup */
+.location-popup {
+  position: absolute;
+  top: 60px;
+  left: 15px;
+  background: #fff;
+  color: #222;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  width: 220px;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.location-popup h3 {
+  margin: 0 0 8px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #0b3b51;
+}
+
+.location-popup p {
+  margin: 0 0 10px;
+  font-size: 0.95rem;
+}
+
+.map-link {
+  display: inline-block;
+  color: #0b3b51;
+  font-weight: bold;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.map-link:hover {
+  color: #ff6b35;
+}
+.contact-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 0.95rem;
+  color: #0b3b51;
+}
+
+.contact-info span {
+  font-weight: 500;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+ 

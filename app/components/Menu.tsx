@@ -16,8 +16,8 @@ interface MenuItemData {
 
 export default function Menu() {
   const [menuItems, setMenuItems] = useState<MenuItemData[]>([]);
-  const [categories, setCategories] = useState<string[]>(["All"]);
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [categories, setCategories] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState("Hot Drinks");
 
   useEffect(() => {
     async function fetchMenu() {
@@ -28,22 +28,37 @@ export default function Menu() {
       });
       setMenuItems(items);
 
-      // Extract unique categories from menu items
+      // Extract unique categories
       const uniqueCategories = Array.from(
         new Set(items.map((item) => item.category))
       );
-      setCategories(["All", ...uniqueCategories]);
+
+      setCategories(uniqueCategories);
+
+      if (!uniqueCategories.includes("Hot Drinks") && uniqueCategories.length > 0) {
+        setSelectedCategory(uniqueCategories[0]);
+      }
     }
     fetchMenu();
   }, []);
 
-  const filteredItems =
-    selectedCategory === "All"
-      ? menuItems
-      : menuItems.filter((item) => item.category === selectedCategory);
+  const filteredItems = menuItems.filter(
+    (item) => item.category === selectedCategory
+  );
+
+  const normalItems = filteredItems.filter(
+    (item) => !item.name.trim().startsWith("+")
+  );
+  const addonItems = filteredItems.filter((item) =>
+    item.name.trim().startsWith("+")
+  );
 
   return (
     <section className="menu">
+      {/* Heading */}
+<h2 className="menu-heading">Browse our menu</h2>
+
+      {/* Categories */}
       <div className="categories">
         {categories.map((category) => (
           <button
@@ -58,11 +73,25 @@ export default function Menu() {
         ))}
       </div>
 
+      {/* Selected category */}
       <div className="menu-content">
+        <h3 className="selected-category-title">{selectedCategory}</h3>
+
         <div className="menu-items">
-          {filteredItems.map((item) => (
+          {/* Normal items */}
+          {normalItems.map((item) => (
             <MenuItem key={item.id} name={item.name} price={item.price} />
           ))}
+
+          {/* Add-ons */}
+          {addonItems.length > 0 && (
+            <div className="addons-section">
+              <h4 className="addons-title">Perfect Add-ons</h4>
+              {addonItems.map((item) => (
+                <MenuItem key={item.id} name={item.name} price={item.price} />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </section>

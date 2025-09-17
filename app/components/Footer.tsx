@@ -22,7 +22,7 @@ function Footer() {
       </p>
        <p className="socials">
        
-        <a href="/admin" target="_blank" rel="noopener noreferrer">
+        <a href="/controlpanel-3b7v" target="_blank" rel="noopener noreferrer">
           <img 
             src="https://img.icons8.com/ios-glyphs/30/ffffff/admin-settings-male.png" 
             alt="Admin" 

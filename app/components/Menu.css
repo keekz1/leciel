@@ -5,18 +5,19 @@
   gap: 12px;
   flex-wrap: wrap;
   margin-bottom: 25px;
-  padding: 5px 0;
+  padding: 8px 0;
   background-color: #fff5c4;
   border-bottom: 2px solid #eee;
+  border-radius: 6px 6px 0 0;
 }
 
 /* Individual category buttons */
 .category-btn {
-  padding: 8px 16px;
+  padding: 8px 18px;
   border: 1px solid #ddd;
   background-color: #fff5c4;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 20px; /* pill style */
   font-size: 0.95rem;
   color: #333;
   font-weight: bold;
@@ -27,11 +28,37 @@
 .category-btn:hover {
   background-color: #ffeaa0;
   border-color: #ccc;
+  transform: translateY(-1px);
 }
 
 .category-btn.active {
-  background-color: #ffe68f;
-  border-color: #999;
+  background-color: #ffc857;
+  border-color: #b68c2c;
+  color: #222;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+/* Main heading: Browse our menu */
+.menu-heading {
+  font-family: "Georgia", "Times New Roman", serif;
+  font-size: 2.2rem;
+  font-weight: 500;
+  text-align: center;
+  margin: 2rem 0 1.8rem;
+  color: #ffc857; /* ✅ rich golden, visible on light bg */
+  letter-spacing: 1px;
+  font-style: italic;
+  position: relative;
+}
+
+.menu-heading::after {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 2px;
+  background: #0b3b51; /* ✅ dark underline for contrast */
+  margin: 0.8rem auto 0;
+  opacity: 0.9;
+  border-radius: 2px;
 }
 
 /* Menu container */
@@ -40,6 +67,20 @@
   justify-content: center;
   padding: 20px 10px;
   background-color: #0b3b51;
+  border-radius: 0 0 8px 8px;
+}
+
+/* Selected category heading */
+.selected-category-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 1.2rem;
+  color: #fff5c4;
+  text-align: center;
+  padding: 0.6rem 1rem;
+  background: rgba(255, 245, 196, 0.1);
+  border-left: 4px solid #ffc857;
+  border-radius: 6px;
 }
 
 /* Menu items as vertical list */
@@ -59,15 +100,35 @@
   padding: 12px 16px;
   border-radius: 6px;
   background-color: #0b3b51;
-  border-bottom: 1px solid #fff5c4;
+  border: 1px solid #fff5c4;
   color: #ffffff;
   font-weight: bold;
   font-size: 1rem;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
 .menu-item-card:hover {
   background-color: #2a4a72;
+  transform: translateY(-2px);
+}
+
+/* Add-ons section */
+.addons-section {
+  margin-top: 2rem;
+  padding: 1rem;
+  background: rgba(255, 245, 196, 0.05);
+  border: 1px dashed #ffc857;
+  border-radius: 8px;
+}
+
+.addons-title {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #ffc857;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 /* Responsive: stack name and price */

@@ -33,41 +33,44 @@ export default function AdminPage() {
   const [countdown, setCountdown] = useState(20);
   const ADMIN_USERNAME = "waelbouaziz";
   const ADMIN_PASSWORD = "wael90@leciel@2025";
+const MAX_ATTEMPTS = 5;      // max attempts before lock
+const LOCK_DURATION = 60;   // lock duration in seconds (2 minutes)
+ 
+function handleLogin(e: React.FormEvent) {
+  e.preventDefault();
+  if (isLocked) return;
 
-  function handleLogin(e: React.FormEvent) {
-    e.preventDefault();
-    if (isLocked) return;
+  if (
+    loginForm.username === ADMIN_USERNAME &&
+    loginForm.password === ADMIN_PASSWORD
+  ) {
+    setIsAuthenticated(true);
+    setAttempts(0);
+  } else {
+    const newAttempts = attempts + 1;
+    setAttempts(newAttempts);
 
-    if (
-      loginForm.username === ADMIN_USERNAME &&
-      loginForm.password === ADMIN_PASSWORD
-    ) {
-      setIsAuthenticated(true);
-      setAttempts(0);
+    if (newAttempts >= MAX_ATTEMPTS) {
+      setIsLocked(true);
+      setCountdown(LOCK_DURATION);
+
+      const timer = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            setIsLocked(false);
+            setAttempts(0);
+            return LOCK_DURATION;
+          }
+          return prev - 1;
+        });
+      }, 1000);
     } else {
-      const newAttempts = attempts + 1;
-      setAttempts(newAttempts);
-
-      if (newAttempts >= 7) {
-        setIsLocked(true);
-        setCountdown(20);
-
-        const timer = setInterval(() => {
-          setCountdown((prev) => {
-            if (prev <= 1) {
-              clearInterval(timer);
-              setIsLocked(false);
-              setAttempts(0);
-              return 20;
-            }
-            return prev - 1;
-          });
-        }, 1000);
-      } else {
-        alert(`Invalid username or password. Attempt ${newAttempts}/7`);
-      }
+      alert(`Invalid username or password. Attempt ${newAttempts}/${MAX_ATTEMPTS}`);
     }
   }
+}
+
 
   function handleLogout() {
     setIsAuthenticated(false);
@@ -224,17 +227,24 @@ export default function AdminPage() {
             disabled={isLocked}
           />
 
-          <button
-            type="submit"
-            disabled={isLocked}
-            className={`w-full text-white p-3 rounded-md font-medium ${
-              isLocked
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700"
-            }`}
-          >
-            {isLocked ? `Locked (${countdown}s)` : "Login"}
-          </button>
+{isLocked && (
+  <div className="mb-4 p-2 bg-red-100 border border-red-300 rounded text-red-700 text-center">
+    Too many failed attempts. Try again in {countdown} seconds.
+  </div>
+)}
+
+<button
+  type="submit"
+  disabled={isLocked}
+  className={`w-full text-white p-3 rounded-md font-medium ${
+    isLocked
+      ? "bg-gray-400 cursor-not-allowed"
+      : "bg-blue-600 hover:bg-blue-700"
+  }`}
+>
+  {isLocked ? `Locked (${countdown}s)` : "Login"}
+</button>
+
         </form>
       </main>
     );
